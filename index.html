@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Articulate" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Articulate</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #0a0a0a;
+      --bg2: #141414;
+      --bg3: #1c1c1c;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0ede8;
+      --text2: #888;
+      --text3: #555;
+      --accent: #f0ede8;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Lora', Georgia, serif;
+      overscroll-behavior: none;
+    }
+
+    #app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(var(--safe-bottom) + 1rem);
+    }
+    .screen.active { display: flex; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      padding: 1rem 1.25rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .app-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text2);
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .streak-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text2);
+      border: 0.5px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+    .streak-badge.active { color: #e8a43a; border-color: rgba(232,164,58,0.3); }
+
+    .xp-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text2);
+      border: 0.5px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+
+    /* ── SCROLL AREA ── */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 2rem;
+    }
+
+    /* ── LEVEL HERO ── */
+    .level-hero {
+      padding: 1.5rem 1.25rem 1.25rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .level-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .level-name {
+      font-size: 21px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .level-quote {
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+    }
+
+    .progress-track {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--text);
+      border-radius: 2px;
+      transition: width 1s cubic-bezier(.4,0,.2,1);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    /* ── STREAK ROW ── */
+    .streak-row {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .streak-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+    }
+
+    .streak-dot.done { background: #e8a43a; border-color: #e8a43a; color: var(--bg); }
+    .streak-dot.today { border-color: var(--border2); color: var(--text2); }
+
+    .streak-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      margin-left: auto;
+    }
+
+    /* ── SECTION ── */
+    .section-label {
+      padding: 1rem 1.25rem 0.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    /* ── CARDS ── */
+    .card {
+      margin: 0 1rem 0.75rem;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .card:active { background: var(--bg3); }
+    .card.featured { border-color: var(--border2); }
+    .card.completed { opacity: 0.5; }
+
+    .card-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 5px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .xp-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .diff-pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 0.5px solid var(--border);
+      color: var(--text3);
+    }
+
+    /* ── DUMP MODE CARD ── */
+    .dump-card {
+      margin: 0 1rem 0.75rem;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .dump-card:active { background: var(--bg3); }
+
+    /* ── EXERCISE SCREEN ── */
+    .ex-topbar {
+      padding: 1rem 1.25rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 20px;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .ex-topbar-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .toggle-btn.active {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .ex-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 1.25rem 1.25rem 2rem;
+    }
+
+    .ex-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 0.75rem;
+    }
+
+    .ex-question {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .ex-hint {
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── TEXT MODE ── */
+    .answer-wrap { position: relative; }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+      font-family: 'Lora', Georgia, serif;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.65;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+
+    textarea:focus { border-color: var(--border2); }
+    textarea::placeholder { color: var(--text3); font-style: italic; }
+
+    .word-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      text-align: right;
+      margin-top: 6px;
+      margin-bottom: 1rem;
+    }
+
+    /* ── AUDIO MODE ── */
+    .audio-area {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 0;
+    }
+
+    .audio-area.visible { display: flex; }
+
+    .mic-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border2);
+      background: var(--bg2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--text2);
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .mic-btn.recording {
+      background: #c0392b;
+      border-color: #c0392b;
+      color: white;
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
+      70% { box-shadow: 0 0 0 16px rgba(192,57,43,0); }
+      100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+    }
+
+    .audio-status {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .transcript-box {
+      width: 100%;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+      font-family: 'Lora', Georgia, serif;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 80px;
+      margin-top: 1.25rem;
+      white-space: pre-wrap;
+    }
+
+    .transcript-box.empty { color: var(--text3); font-style: italic; }
+
+    /* ── BUTTONS ── */
+    .primary-btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      -webkit-appearance: none;
+      margin-top: 0.5rem;
+    }
+
+    .primary-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+    .primary-btn:not(:disabled):active { opacity: 0.8; }
+
+    .ghost-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: none;
+      color: var(--text2);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-appearance: none;
+      margin-top: 0.75rem;
+    }
+    .ghost-btn:active { background: var(--bg2); }
+
+    /* ── REFLECTION ── */
+    .reflection-block {
+      margin-top: 1.5rem;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+
+    .reflection-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 0.75rem;
+    }
+
+    .reflection-q {
+      font-size: 14px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.6;
+      padding: 0.5rem 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .reflection-q:last-child { border-bottom: none; }
+    .reflection-q::before { content: "→  "; color: var(--text3); }
+
+    /* ── THOUGHT DUMP ── */
+    .dump-result {
+      margin-top: 1.5rem;
+      background: var(--bg2);
+      border: 0.5px solid var(--border2);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+
+    .dump-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 0.5rem;
+    }
+
+    .dump-sentence {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.55;
+      margin-bottom: 0.75rem;
+    }
+
+    .dump-why {
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* ── COMPLETE ── */
+    .complete-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .complete-icon {
+      font-size: 36px;
+      color: var(--text2);
+      margin-bottom: 1.25rem;
+    }
+
+    .complete-title {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .complete-sub {
+      font-size: 14px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+      max-width: 300px;
+    }
+
+    .xp-gained {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+
+    /* ── LOADING ── */
+    .dots {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      padding: 0.5rem 0;
+    }
+    .dots span {
+      width: 5px; height: 5px;
+      background: var(--text3);
+      border-radius: 50%;
+      animation: dp 1.2s ease-in-out infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dp { 0%,80%,100%{opacity:.2;transform:scale(.8)} 40%{opacity:1;transform:scale(1)} }
+
+    /* ── INSTALL BANNER ── */
+    .install-banner {
+      margin: 0 1rem 0.75rem;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.875rem 1.25rem;
+      display: none;
+    }
+
+    .install-banner.visible { display: block; }
+
+    .install-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text2);
+      margin-bottom: 4px;
+    }
+
+    .install-sub {
+      font-size: 13px;
+      color: var(--text3);
+      font-style: italic;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .install-btn {
+      background: none;
+      border: 0.5px solid var(--border2);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text2);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="home-screen">
+    <div class="topbar">
+      <span class="app-name">Articulate</span>
+      <div class="topbar-right">
+        <span class="streak-badge" id="streak-badge">0 day streak</span>
+        <span class="xp-badge" id="xp-badge">0 XP</span>
+      </div>
+    </div>
+
+    <div class="scroll-area">
+
+      <div class="install-banner" id="install-banner">
+        <div class="install-title">Add to Home Screen</div>
+        <div class="install-sub">Install this app so it's always one tap away.</div>
+        <button class="install-btn" id="install-btn">Install</button>
+      </div>
+
+      <div class="level-hero">
+        <div class="level-eyebrow">your level</div>
+        <div class="level-name" id="level-name">The Quiet Thinker</div>
+        <div class="level-quote" id="level-quote">"You have ideas. Getting them out of your head is the first challenge."</div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-meta">
+          <span id="prog-label">0 / 100 XP</span>
+          <span id="level-num">Lvl 1</span>
+        </div>
+      </div>
+
+      <div class="streak-row" id="streak-row"></div>
+
+      <div class="section-label">today's exercise</div>
+      <div class="card featured" id="daily-card">
+        <div class="card-eyebrow">Daily</div>
+        <div class="card-title" id="daily-title">—</div>
+        <div class="card-desc" id="daily-desc"></div>
+        <div class="card-footer">
+          <span class="xp-label" id="daily-xp">+20 XP</span>
+          <span class="diff-pill" id="daily-diff">beginner</span>
+        </div>
+      </div>
+
+      <div class="section-label">thought dump</div>
+      <div class="dump-card" id="dump-card">
+        <div class="card-eyebrow">Free mode</div>
+        <div class="card-title">Brain Drain</div>
+        <div class="card-desc">Write anything that's in your head. No rules. AI will find the clearest thing you said.</div>
+        <div class="card-footer">
+          <span class="xp-label">+15 XP</span>
+          <span class="diff-pill">any level</span>
+        </div>
+      </div>
+
+      <div class="section-label">practice more</div>
+      <div id="extra-cards"></div>
+
+    </div>
+  </div>
+
+  <!-- EXERCISE -->
+  <div class="screen" id="exercise-screen">
+    <div class="ex-topbar">
+      <button class="back-btn" id="back-btn" aria-label="back">&#8592;</button>
+      <span class="ex-topbar-title" id="ex-topbar-title">Exercise</span>
+      <div class="mode-toggle">
+        <button class="toggle-btn active" id="text-toggle">Type</button>
+        <button class="toggle-btn" id="audio-toggle">Speak</button>
+      </div>
+    </div>
+
+    <div class="ex-body" id="ex-body">
+      <div class="ex-eyebrow" id="ex-eyebrow">Thought prompt</div>
+      <div class="ex-question" id="ex-question"></div>
+      <div class="ex-hint" id="ex-hint"></div>
+
+      <!-- Text mode -->
+      <div id="text-mode">
+        <textarea id="user-answer" placeholder="Start here... there's no wrong answer." rows="6"></textarea>
+        <div class="word-meta" id="word-meta">0 words</div>
+        <button class="primary-btn" id="submit-btn" disabled>Submit</button>
+      </div>
+
+      <!-- Audio mode -->
+      <div class="audio-area" id="audio-area">
+        <button class="mic-btn" id="mic-btn" aria-label="Start recording">🎙</button>
+        <div class="audio-status" id="audio-status">Tap to speak</div>
+        <div id="transcript-wrap" style="width:100%;margin-top:1.25rem;display:none;">
+          <div class="transcript-box" id="transcript-box"></div>
+          <div class="word-meta" id="audio-word-meta">0 words</div>
+          <button class="primary-btn" id="audio-submit-btn" disabled>Submit</button>
+        </div>
+      </div>
+
+      <!-- Reflection (shared) -->
+      <div id="reflection-wrap" style="display:none;">
+        <div class="reflection-block">
+          <div class="reflection-eyebrow">Reflect on this</div>
+          <div id="reflection-content"><div class="dots"><span></span><span></span><span></span></div></div>
+        </div>
+        <button class="primary-btn" id="finish-btn">Mark complete</button>
+        <button class="ghost-btn" id="back-home-ex-btn">Back to home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THOUGHT DUMP -->
+  <div class="screen" id="dump-screen">
+    <div class="ex-topbar">
+      <button class="back-btn" id="dump-back-btn" aria-label="back">&#8592;</button>
+      <span class="ex-topbar-title">Brain Drain</span>
+      <div class="mode-toggle">
+        <button class="toggle-btn active" id="dump-text-toggle">Type</button>
+        <button class="toggle-btn" id="dump-audio-toggle">Speak</button>
+      </div>
+    </div>
+
+    <div class="ex-body">
+      <div class="ex-eyebrow">Thought Dump</div>
+      <div class="ex-question">What's in your head right now?</div>
+      <div class="ex-hint">Don't try to make it good. Just write. Get it out. All of it. The AI will find the clearest thing in there.</div>
+
+      <div id="dump-text-mode">
+        <textarea id="dump-answer" placeholder="Anything. Stream of consciousness. Half-sentences. Whatever." rows="8"></textarea>
+        <div class="word-meta" id="dump-word-meta">0 words</div>
+        <button class="primary-btn" id="dump-submit-btn" disabled>Find my clearest thought</button>
+      </div>
+
+      <div class="audio-area" id="dump-audio-area">
+        <button class="mic-btn" id="dump-mic-btn" aria-label="Start recording">🎙</button>
+        <div class="audio-status" id="dump-audio-status">Tap to speak freely</div>
+        <div id="dump-transcript-wrap" style="width:100%;margin-top:1.25rem;display:none;">
+          <div class="transcript-box" id="dump-transcript-box"></div>
+          <div class="word-meta" id="dump-audio-word-meta">0 words</div>
+          <button class="primary-btn" id="dump-audio-submit-btn" disabled>Find my clearest thought</button>
+        </div>
+      </div>
+
+      <div id="dump-result-wrap" style="display:none;">
+        <div class="dump-result">
+          <div class="dump-eyebrow">Your clearest thought</div>
+          <div class="dump-sentence" id="dump-sentence"><div class="dots"><span></span><span></span><span></span></div></div>
+          <div class="dump-why" id="dump-why"></div>
+        </div>
+        <button class="primary-btn" id="dump-finish-btn">Done (+15 XP)</button>
+        <button class="ghost-btn" id="dump-back-home-btn">Back to home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLETE -->
+  <div class="screen" id="complete-screen">
+    <div class="ex-topbar">
+      <span class="ex-topbar-title">Complete</span>
+    </div>
+    <div class="complete-body">
+      <div class="complete-icon">✓</div>
+      <div class="complete-title">Good work.</div>
+      <div class="complete-sub" id="complete-sub"></div>
+      <div class="xp-gained" id="xp-gained"></div>
+      <button class="ghost-btn" id="home-btn" style="width:200px;">Back to home</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const LEVELS = [
+  { name:"The Quiet Thinker", quote:'"You have ideas. Getting them out of your head is the first challenge."', xp:100 },
+  { name:"The Hesitant Speaker", quote:'"Words come out, but they don\'t quite match what\'s inside."', xp:200 },
+  { name:"The Steady Voice", quote:'"You\'re finding your rhythm. Keep going."', xp:350 },
+  { name:"The Clear Communicator", quote:'"People understand you. That\'s not small."', xp:600 },
+  { name:"The Articulate Mind", quote:'"You say what you mean, and mean what you say."', xp:Infinity },
+];
+
+const EXERCISES = [
+  { id:"e1", title:"The One-Sentence Test", desc:"Describe what you did today in one sentence only.", type:"Warm-up", xp:15, diff:"beginner",
+    question:"In one single sentence, describe something you did today.",
+    hint:"Don't overthink it. Pick one thing. One sentence only — that's the whole point.",
+    reflections:["Did your sentence say what you actually meant, or did you say something nearby?","What would you change about it if you could?","Was the hardest part: finding the words, or choosing what to include?"] },
+  { id:"e2", title:"Explain Your Mood", desc:"Describe how you're feeling without using the obvious words.", type:"Emotional vocabulary", xp:25, diff:"beginner",
+    question:"How are you feeling right now? Describe it without using: happy, sad, anxious, fine, or okay.",
+    hint:"Try textures, weather, physical sensations. 'My chest feels like someone turned down the volume on everything' counts.",
+    reflections:["Did describing it make the feeling clearer or more complicated?","What word did you almost use but stopped yourself?","If someone read your answer, would they feel what you felt?"] },
+  { id:"e3", title:"Teach It Simply", desc:"Explain something you know well to a curious 10-year-old.", type:"Clarity drill", xp:30, diff:"intermediate",
+    question:"Pick something you understand well. Explain it like you're talking to a curious 10-year-old.",
+    hint:"No jargon. No assumptions. If you need to explain a word to explain another word, you're on the right track.",
+    reflections:["Where did you have to stop and think about what you were actually saying?","Was there a part where you slipped back into complicated language?","What would you remove if you had to cut it in half?"] },
+  { id:"e4", title:"Disagree Without Fighting", desc:"Write a calm response to something you disagree with.", type:"Conflict articulation", xp:40, diff:"intermediate",
+    question:"Think of an opinion someone has that you disagree with. Write a calm, clear response that explains your position without dismissing theirs.",
+    hint:"The goal isn't to win. It's to say: here's where I stand, and here's why — without making them feel attacked.",
+    reflections:["Did you understand their side well enough to represent it fairly?","Where did emotion start to creep into your word choices?","Could someone reading this tell what you believe, not just what you oppose?"] },
+  { id:"e5", title:"The Hard Conversation", desc:"Write what you'd say in a conversation you've been avoiding.", type:"Real-world rehearsal", xp:50, diff:"advanced",
+    question:"Think of a conversation you've been putting off. Write out what you would actually say if you had to say it right now.",
+    hint:"It doesn't have to be perfect. You don't have to send it to anyone. The goal is to get the thought out of your head.",
+    reflections:["What were you afraid would come out if you said this?","Is what you wrote what you actually mean, or is it the safe version?","What would change if you really said this?"] },
+];
+
+// State
+let state = { xp:0, levelIndex:0, completedToday:[], streak:0, lastDate:"", currentExercise:null, isDump:false };
+
+function loadState() {
+  try {
+    const s = localStorage.getItem("articulate_state");
+    if (s) state = { ...state, ...JSON.parse(s) };
+    const today = new Date().toDateString();
+    if (state.lastDate !== today) {
+      state.completedToday = [];
+      if (state.lastDate) {
+        const last = new Date(state.lastDate);
+        const now = new Date(today);
+        const diff = Math.floor((now - last) / 86400000);
+        if (diff > 1) state.streak = 0;
+      }
+      state.lastDate = today;
+      saveState();
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem("articulate_state", JSON.stringify(state)); } catch(e) {}
+}
+
+function dailyExerciseIndex() {
+  const day = Math.floor(Date.now() / 86400000);
+  return day % EXERCISES.length;
+}
+
+function getLevelInfo() {
+  let threshold = 0;
+  for (let i = 0; i < state.levelIndex; i++) threshold += LEVELS[i].xp === Infinity ? 0 : LEVELS[i].xp;
+  const inLevel = state.xp - threshold;
+  const needed = LEVELS[state.levelIndex].xp;
+  return { inLevel, needed, lvl: LEVELS[state.levelIndex] };
+}
+
+function addXP(amount) {
+  if (!state.completedToday.length) { state.streak++; }
+  state.xp += amount;
+  while (state.levelIndex < LEVELS.length - 1) {
+    let thresh = 0;
+    for (let i = 0; i <= state.levelIndex; i++) thresh += LEVELS[i].xp === Infinity ? 0 : LEVELS[i].xp;
+    if (state.xp >= thresh && LEVELS[state.levelIndex].xp !== Infinity) state.levelIndex++;
+    else break;
+  }
+  saveState();
+}
+
+function updateHomeUI() {
+  const { inLevel, needed, lvl } = getLevelInfo();
+  document.getElementById('xp-badge').textContent = state.xp + ' XP';
+
+  const s = state.streak;
+  const sb = document.getElementById('streak-badge');
+  sb.textContent = s + (s === 1 ? ' day streak' : ' day streak');
+  sb.className = 'streak-badge' + (s > 0 ? ' active' : '');
+
+  document.getElementById('level-name').textContent = lvl.name;
+  document.getElementById('level-quote').textContent = lvl.quote;
+  const isMax = needed === Infinity;
+  const pct = isMax ? 100 : Math.min(100, Math.round((inLevel / needed) * 100));
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = isMax ? 'Max level' : `${inLevel} / ${needed} XP`;
+  document.getElementById('level-num').textContent = 'Lvl ' + (state.levelIndex + 1);
+
+  // Streak row — last 7 days
+  const row = document.getElementById('streak-row');
+  row.innerHTML = '';
+  const days = ['M','T','W','T','F','S','S'];
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  for (let i = 0; i < 7; i++) {
+    const dot = document.createElement('div');
+    const isPast = i < todayIdx && state.streak > (todayIdx - i);
+    const isToday = i === todayIdx;
+    dot.className = 'streak-dot' + (isPast ? ' done' : '') + (isToday ? ' today' : '');
+    dot.textContent = days[i];
+    row.appendChild(dot);
+  }
+  const sl = document.createElement('span');
+  sl.className = 'streak-label';
+  sl.textContent = state.streak + ' day' + (state.streak !== 1 ? 's' : '');
+  row.appendChild(sl);
+
+  const dIdx = dailyExerciseIndex();
+  const daily = EXERCISES[dIdx];
+  const done = state.completedToday.includes(daily.id);
+  document.getElementById('daily-card').className = 'card featured' + (done ? ' completed' : '');
+  document.getElementById('daily-title').textContent = daily.title + (done ? ' ✓' : '');
+  document.getElementById('daily-desc').textContent = daily.desc;
+  document.getElementById('daily-xp').textContent = '+' + daily.xp + ' XP';
+  document.getElementById('daily-diff').textContent = daily.diff;
+
+  const extras = document.getElementById('extra-cards');
+  extras.innerHTML = '';
+  EXERCISES.forEach((ex, i) => {
+    if (i === dIdx) return;
+    const done2 = state.completedToday.includes(ex.id);
+    const c = document.createElement('div');
+    c.className = 'card' + (done2 ? ' completed' : '');
+    c.innerHTML = `<div class="card-eyebrow">${ex.type}</div>
+      <div class="card-title">${ex.title}${done2 ? ' ✓' : ''}</div>
+      <div class="card-desc">${ex.desc}</div>
+      <div class="card-footer"><span class="xp-label">+${ex.xp} XP</span><span class="diff-pill">${ex.diff}</span></div>`;
+    c.addEventListener('click', () => startExercise(ex));
+    extras.appendChild(c);
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startExercise(ex) {
+  state.currentExercise = ex;
+  state.isDump = false;
+  document.getElementById('ex-topbar-title').textContent = ex.title;
+  document.getElementById('ex-eyebrow').textContent = ex.type;
+  document.getElementById('ex-question').textContent = ex.question;
+  document.getElementById('ex-hint').textContent = ex.hint;
+  document.getElementById('user-answer').value = '';
+  document.getElementById('word-meta').textContent = '0 words';
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('transcript-box').textContent = '';
+  document.getElementById('transcript-wrap').style.display = 'none';
+  document.getElementById('audio-status').textContent = 'Tap to speak';
+  document.getElementById('mic-btn').className = 'mic-btn';
+  document.getElementById('reflection-wrap').style.display = 'none';
+  document.getElementById('reflection-content').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  setExMode('text');
+  showScreen('exercise-screen');
+}
+
+// Text/Audio toggle for exercise
+let exMode = 'text';
+function setExMode(m) {
+  exMode = m;
+  document.getElementById('text-mode').style.display = m === 'text' ? 'block' : 'none';
+  document.getElementById('audio-area').className = 'audio-area' + (m === 'audio' ? ' visible' : '');
+  document.getElementById('text-toggle').className = 'toggle-btn' + (m === 'text' ? ' active' : '');
+  document.getElementById('audio-toggle').className = 'toggle-btn' + (m === 'audio' ? ' active' : '');
+}
+document.getElementById('text-toggle').addEventListener('click', () => setExMode('text'));
+document.getElementById('audio-toggle').addEventListener('click', () => setExMode('audio'));
+
+document.getElementById('daily-card').addEventListener('click', () => {
+  startExercise(EXERCISES[dailyExerciseIndex()]);
+});
+document.getElementById('dump-card').addEventListener('click', () => {
+  document.getElementById('dump-answer').value = '';
+  document.getElementById('dump-word-meta').textContent = '0 words';
+  document.getElementById('dump-submit-btn').disabled = true;
+  document.getElementById('dump-result-wrap').style.display = 'none';
+  document.getElementById('dump-text-mode').style.display = 'block';
+  document.getElementById('dump-audio-area').className = 'audio-area';
+  document.getElementById('dump-text-toggle').className = 'toggle-btn active';
+  document.getElementById('dump-audio-toggle').className = 'toggle-btn';
+  document.getElementById('dump-transcript-wrap').style.display = 'none';
+  showScreen('dump-screen');
+});
+document.getElementById('back-btn').addEventListener('click', () => { showScreen('home-screen'); updateHomeUI(); });
+document.getElementById('dump-back-btn').addEventListener('click', () => { showScreen('home-screen'); updateHomeUI(); });
+
+// Word count helpers
+function countWords(t) { return t.trim().split(/\s+/).filter(w => w).length; }
+
+document.getElementById('user-answer').addEventListener('input', function() {
+  const w = countWords(this.value);
+  document.getElementById('word-meta').textContent = w + ' word' + (w !== 1 ? 's' : '');
+  document.getElementById('submit-btn').disabled = w < 5;
+});
+
+document.getElementById('dump-answer').addEventListener('input', function() {
+  const w = countWords(this.value);
+  document.getElementById('dump-word-meta').textContent = w + ' word' + (w !== 1 ? 's' : '');
+  document.getElementById('dump-submit-btn').disabled = w < 10;
+});
+
+// API call helper
+async function callClaude(systemPrompt, userContent) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1000,
+      system: systemPrompt,
+      messages:[{ role:"user", content: userContent }]
+    })
+  });
+  const data = await res.json();
+  return data.content.map(c => c.text || '').join('');
+}
+
+// Submit exercise
+async function submitExercise(answer) {
+  document.getElementById('text-mode').style.display = 'none';
+  document.getElementById('audio-area').className = 'audio-area';
+  document.getElementById('reflection-wrap').style.display = 'block';
+  document.getElementById('reflection-content').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+
+  const ex = state.currentExercise;
+  let questions = ex.reflections;
+
+  try {
+    const raw = await callClaude(
+      `You are a calm, honest coach helping someone practice articulating their thoughts. 
+The person just answered a thought-articulation exercise. Give 3 short, honest reflection questions based on what they actually wrote.
+Not compliments. Real questions that make them look at what they said more carefully.
+Each question under 25 words. Warm but direct.
+Respond ONLY with valid JSON: {"questions":["q1","q2","q3"]}`,
+      `Exercise: "${ex.question}"\n\nAnswer: "${answer}"`
+    );
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    if (parsed.questions?.length) questions = parsed.questions;
+  } catch(e) {}
+
+  document.getElementById('reflection-content').innerHTML = questions.map(q =>
+    `<div class="reflection-q">${q}</div>`
+  ).join('');
+}
+
+document.getElementById('submit-btn').addEventListener('click', () => {
+  submitExercise(document.getElementById('user-answer').value.trim());
+});
+
+document.getElementById('finish-btn').addEventListener('click', () => {
+  const ex = state.currentExercise;
+  if (!state.completedToday.includes(ex.id)) {
+    state.completedToday.push(ex.id);
+    addXP(ex.xp);
+  }
+  document.getElementById('complete-sub').textContent = `You completed "${ex.title}". Sit with those questions for a bit.`;
+  document.getElementById('xp-gained').textContent = `+${ex.xp} XP earned`;
+  showScreen('complete-screen');
+  updateHomeUI();
+});
+
+document.getElementById('back-home-ex-btn').addEventListener('click', () => { showScreen('home-screen'); updateHomeUI(); });
+document.getElementById('home-btn').addEventListener('click', () => { showScreen('home-screen'); updateHomeUI(); });
+
+// Thought Dump
+let dumpMode = 'text';
+function setDumpMode(m) {
+  dumpMode = m;
+  document.getElementById('dump-text-mode').style.display = m === 'text' ? 'block' : 'none';
+  document.getElementById('dump-audio-area').className = 'audio-area' + (m === 'audio' ? ' visible' : '');
+  document.getElementById('dump-text-toggle').className = 'toggle-btn' + (m === 'text' ? ' active' : '');
+  document.getElementById('dump-audio-toggle').className = 'toggle-btn' + (m === 'audio' ? ' active' : '');
+}
+document.getElementById('dump-text-toggle').addEventListener('click', () => setDumpMode('text'));
+document.getElementById('dump-audio-toggle').addEventListener('click', () => setDumpMode('audio'));
+
+async function submitDump(answer) {
+  document.getElementById('dump-text-mode').style.display = 'none';
+  document.getElementById('dump-audio-area').className = 'audio-area';
+  document.getElementById('dump-result-wrap').style.display = 'block';
+  document.getElementById('dump-sentence').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  document.getElementById('dump-why').textContent = '';
+
+  try {
+    const raw = await callClaude(
+      `You are reading a raw, unfiltered brain dump — someone just wrote down whatever was in their head. 
+Your job is to find the single clearest, most articulate sentence or idea in all that noise. 
+Then briefly explain (1-2 sentences) why that one stood out — what made it clear or honest.
+Respond ONLY with valid JSON: {"sentence":"...", "why":"..."}`,
+      `Brain dump:\n"${answer}"`
+    );
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    document.getElementById('dump-sentence').textContent = parsed.sentence || 'Could not find one — try writing more.';
+    document.getElementById('dump-why').textContent = parsed.why || '';
+  } catch(e) {
+    document.getElementById('dump-sentence').textContent = 'Could not process — try again.';
+  }
+}
+
+document.getElementById('dump-submit-btn').addEventListener('click', () => {
+  submitDump(document.getElementById('dump-answer').value.trim());
+});
+
+document.getElementById('dump-finish-btn').addEventListener('click', () => {
+  if (!state.completedToday.includes('dump')) {
+    state.completedToday.push('dump');
+    addXP(15);
+  }
+  document.getElementById('complete-sub').textContent = 'You did a brain drain. That takes honesty.';
+  document.getElementById('xp-gained').textContent = '+15 XP earned';
+  showScreen('complete-screen');
+  updateHomeUI();
+});
+
+document.getElementById('dump-back-home-btn').addEventListener('click', () => { showScreen('home-screen'); updateHomeUI(); });
+
+// Speech Recognition
+function setupSpeech(micBtnId, statusId, transcriptBoxId, wrapId, wordMetaId, submitBtnId, isDump) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    document.getElementById(statusId).textContent = 'Speech not supported on this browser';
+    return;
+  }
+  const rec = new SpeechRecognition();
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.lang = 'en-ZA';
+  let recording = false;
+  let finalTranscript = '';
+
+  document.getElementById(micBtnId).addEventListener('click', () => {
+    if (!recording) {
+      recording = true;
+      finalTranscript = '';
+      document.getElementById(micBtnId).className = 'mic-btn recording';
+      document.getElementById(statusId).textContent = 'Listening... tap to stop';
+      document.getElementById(wrapId).style.display = 'block';
+      document.getElementById(transcriptBoxId).textContent = '';
+      rec.start();
+    } else {
+      recording = false;
+      rec.stop();
+      document.getElementById(micBtnId).className = 'mic-btn';
+      document.getElementById(statusId).textContent = 'Tap to speak again';
+    }
+  });
+
+  rec.onresult = (e) => {
+    let interim = '';
+    finalTranscript = '';
+    for (let i = 0; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    const full = finalTranscript + interim;
+    document.getElementById(transcriptBoxId).textContent = full || '';
+    const w = countWords(full);
+    document.getElementById(wordMetaId).textContent = w + ' word' + (w !== 1 ? 's' : '');
+    document.getElementById(submitBtnId).disabled = w < (isDump ? 10 : 5);
+  };
+
+  rec.onerror = () => {
+    recording = false;
+    document.getElementById(micBtnId).className = 'mic-btn';
+    document.getElementById(statusId).textContent = 'Error — tap to try again';
+  };
+}
+
+setupSpeech('mic-btn','audio-status','transcript-box','transcript-wrap','audio-word-meta','audio-submit-btn',false);
+setupSpeech('dump-mic-btn','dump-audio-status','dump-transcript-box','dump-transcript-wrap','dump-audio-word-meta','dump-audio-submit-btn',true);
+
+document.getElementById('audio-submit-btn').addEventListener('click', () => {
+  submitExercise(document.getElementById('transcript-box').textContent.trim());
+});
+
+document.getElementById('dump-audio-submit-btn').addEventListener('click', () => {
+  submitDump(document.getElementById('dump-transcript-box').textContent.trim());
+});
+
+// PWA install prompt
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('visible');
+});
+
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const result = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('install-banner').classList.remove('visible');
+});
+
+// Boot
+loadState();
+updateHomeUI();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
