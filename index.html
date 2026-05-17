@@ -1178,20 +1178,29 @@ function setupSpeech(micBtnId, statusId, transcriptBoxId, wrapId, wordMetaId, su
   rec.interimResults = true;
   rec.lang = 'en-ZA';
   let recording = false;
-  let finalTranscript = '';
+  let savedTranscript = '';      // Transcript accumulated across previous restarts
+  let sessionTranscript = '';    // Final results from current recognition session
+
+  function updateUI(fullText) {
+    document.getElementById(transcriptBoxId).textContent = fullText;
+    const w = countWords(fullText);
+    document.getElementById(wordMetaId).textContent = w + ' word' + (w !== 1 ? 's' : '');
+    document.getElementById(submitBtnId).disabled = w < (isDump ? 10 : 5);
+  }
 
   document.getElementById(micBtnId).addEventListener('click', () => {
     if (!recording) {
       recording = true;
-      finalTranscript = '';
+      savedTranscript = '';
+      sessionTranscript = '';
       document.getElementById(micBtnId).className = 'mic-btn recording';
       document.getElementById(statusId).textContent = 'Listening... tap to stop';
       document.getElementById(wrapId).style.display = 'block';
       document.getElementById(transcriptBoxId).textContent = '';
-      rec.start();
+      try { rec.start(); } catch(e) {}
     } else {
       recording = false;
-      rec.stop();
+      try { rec.stop(); } catch(e) {}
       document.getElementById(micBtnId).className = 'mic-btn';
       document.getElementById(statusId).textContent = 'Tap to speak again';
     }
@@ -1199,22 +1208,37 @@ function setupSpeech(micBtnId, statusId, transcriptBoxId, wrapId, wordMetaId, su
 
   rec.onresult = (e) => {
     let interim = '';
-    finalTranscript = '';
+    sessionTranscript = '';
     for (let i = 0; i < e.results.length; i++) {
-      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+      if (e.results[i].isFinal) sessionTranscript += e.results[i][0].transcript + ' ';
       else interim += e.results[i][0].transcript;
     }
-    const full = finalTranscript + interim;
-    document.getElementById(transcriptBoxId).textContent = full || '';
-    const w = countWords(full);
-    document.getElementById(wordMetaId).textContent = w + ' word' + (w !== 1 ? 's' : '');
-    document.getElementById(submitBtnId).disabled = w < (isDump ? 10 : 5);
+    updateUI(savedTranscript + sessionTranscript + interim);
   };
 
-  rec.onerror = () => {
+  rec.onend = () => {
+    // Browser stopped on its own - if user still wants to record, restart it
+    if (recording) {
+      savedTranscript += sessionTranscript;
+      sessionTranscript = '';
+      // Small delay before restart - some browsers fail without it
+      setTimeout(() => {
+        if (recording) {
+          try { rec.start(); } catch(e) {
+            // If restart fails, try once more after longer delay
+            setTimeout(() => { if (recording) { try { rec.start(); } catch(e2) {} } }, 500);
+          }
+        }
+      }, 100);
+    }
+  };
+
+  rec.onerror = (e) => {
+    // 'no-speech' error is common - just restart if still recording
+    if (e.error === 'no-speech' || e.error === 'aborted') return;
     recording = false;
     document.getElementById(micBtnId).className = 'mic-btn';
-    document.getElementById(statusId).textContent = 'Error — tap to try again';
+    document.getElementById(statusId).textContent = 'Error (' + e.error + ') — tap to try again';
   };
 }
 
