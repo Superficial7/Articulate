@@ -452,12 +452,18 @@
       font-size: 15px;
       color: var(--text);
       line-height: 1.65;
-      min-height: 80px;
+      min-height: 120px;
       margin-top: 1.25rem;
       white-space: pre-wrap;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
     }
 
-    .transcript-box.empty { color: var(--text3); font-style: italic; }
+    .transcript-box:focus { border-color: var(--border2); }
+    .transcript-box[readonly] { opacity: 0.85; cursor: default; }
+    .transcript-box::placeholder { color: var(--text3); font-style: italic; }
 
     /* ── BUTTONS ── */
     .primary-btn {
@@ -751,7 +757,7 @@
         <button class="mic-btn" id="mic-btn" aria-label="Start recording">🎙</button>
         <div class="audio-status" id="audio-status">Tap to speak</div>
         <div id="transcript-wrap" style="width:100%;margin-top:1.25rem;display:none;">
-          <div class="transcript-box" id="transcript-box"></div>
+          <textarea class="transcript-box" id="transcript-box" placeholder="Your spoken words will appear here. Stop recording to edit them." readonly></textarea>
           <div class="word-meta" id="audio-word-meta">0 words</div>
           <button class="primary-btn" id="audio-submit-btn" disabled>Submit</button>
         </div>
@@ -795,7 +801,7 @@
         <button class="mic-btn" id="dump-mic-btn" aria-label="Start recording">🎙</button>
         <div class="audio-status" id="dump-audio-status">Tap to speak freely</div>
         <div id="dump-transcript-wrap" style="width:100%;margin-top:1.25rem;display:none;">
-          <div class="transcript-box" id="dump-transcript-box"></div>
+          <textarea class="transcript-box" id="dump-transcript-box" placeholder="Your spoken words will appear here. Stop recording to edit them." readonly></textarea>
           <div class="word-meta" id="dump-audio-word-meta">0 words</div>
           <button class="primary-btn" id="dump-audio-submit-btn" disabled>Find my clearest thought</button>
         </div>
@@ -988,7 +994,12 @@ function startExercise(ex) {
   document.getElementById('user-answer').value = '';
   document.getElementById('word-meta').textContent = '0 words';
   document.getElementById('submit-btn').disabled = true;
-  document.getElementById('transcript-box').textContent = '';
+  document.getElementById('submit-btn').style.display = '';
+  const tBox = document.getElementById('transcript-box');
+  tBox.value = '';
+  tBox.setAttribute('readonly', '');
+  document.getElementById('audio-word-meta').textContent = '0 words';
+  document.getElementById('audio-submit-btn').disabled = true;
   document.getElementById('transcript-wrap').style.display = 'none';
   document.getElementById('audio-status').textContent = 'Tap to speak';
   document.getElementById('mic-btn').className = 'mic-btn';
@@ -1023,6 +1034,13 @@ document.getElementById('dump-card').addEventListener('click', () => {
   document.getElementById('dump-text-toggle').className = 'toggle-btn active';
   document.getElementById('dump-audio-toggle').className = 'toggle-btn';
   document.getElementById('dump-transcript-wrap').style.display = 'none';
+  const dBox = document.getElementById('dump-transcript-box');
+  dBox.value = '';
+  dBox.setAttribute('readonly', '');
+  document.getElementById('dump-audio-word-meta').textContent = '0 words';
+  document.getElementById('dump-audio-submit-btn').disabled = true;
+  document.getElementById('dump-mic-btn').className = 'mic-btn';
+  document.getElementById('dump-audio-status').textContent = 'Tap to speak freely';
   showScreen('dump-screen');
 });
 document.getElementById('back-btn').addEventListener('click', () => { showScreen('home-screen'); updateHomeUI(); });
@@ -1173,84 +1191,104 @@ function setupSpeech(micBtnId, statusId, transcriptBoxId, wrapId, wordMetaId, su
     document.getElementById(statusId).textContent = 'Speech not supported on this browser';
     return;
   }
-  const rec = new SpeechRecognition();
-  rec.continuous = true;
-  rec.interimResults = true;
-  rec.lang = 'en-ZA';
+
+  let rec = null;                // Current recognition instance (recreated each restart)
   let recording = false;
-  let savedTranscript = '';      // Transcript accumulated across previous restarts
-  let sessionTranscript = '';    // Final results from current recognition session
+  let baseText = '';             // Text in the box BEFORE current recording started (user's edits)
+  let savedTranscript = '';      // Final results from previous sub-sessions in current recording
+  let sessionTranscript = '';    // Final results from current sub-session
 
   function updateUI(fullText) {
-    document.getElementById(transcriptBoxId).textContent = fullText;
+    const box = document.getElementById(transcriptBoxId);
+    box.value = fullText;
     const w = countWords(fullText);
     document.getElementById(wordMetaId).textContent = w + ' word' + (w !== 1 ? 's' : '');
     document.getElementById(submitBtnId).disabled = w < (isDump ? 10 : 5);
   }
 
+  function buildRec() {
+    const r = new SpeechRecognition();
+    r.continuous = true;
+    r.interimResults = true;
+    r.lang = 'en-ZA';
+
+    r.onresult = (e) => {
+      let interim = '';
+      sessionTranscript = '';
+      for (let i = 0; i < e.results.length; i++) {
+        if (e.results[i].isFinal) sessionTranscript += e.results[i][0].transcript + ' ';
+        else interim += e.results[i][0].transcript;
+      }
+      const sep = baseText && !baseText.endsWith(' ') ? ' ' : '';
+      updateUI(baseText + sep + savedTranscript + sessionTranscript + interim);
+    };
+
+    r.onend = () => {
+      if (recording) {
+        savedTranscript += sessionTranscript;
+        sessionTranscript = '';
+        setTimeout(() => {
+          if (recording) {
+            rec = buildRec();
+            try { rec.start(); } catch(e) {
+              setTimeout(() => { if (recording) { try { rec.start(); } catch(e2) {} } }, 500);
+            }
+          }
+        }, 100);
+      }
+    };
+
+    r.onerror = (e) => {
+      if (e.error === 'no-speech' || e.error === 'aborted') return;
+      recording = false;
+      document.getElementById(micBtnId).className = 'mic-btn';
+      document.getElementById(transcriptBoxId).removeAttribute('readonly');
+      document.getElementById(statusId).textContent = 'Error (' + e.error + ') — tap to try again';
+    };
+
+    return r;
+  }
+
+  // Allow typing/editing in the textarea to update word count and enable submit
+  document.getElementById(transcriptBoxId).addEventListener('input', function() {
+    if (recording) return; // ignore during recording (we control the value)
+    const w = countWords(this.value);
+    document.getElementById(wordMetaId).textContent = w + ' word' + (w !== 1 ? 's' : '');
+    document.getElementById(submitBtnId).disabled = w < (isDump ? 10 : 5);
+  });
+
   document.getElementById(micBtnId).addEventListener('click', () => {
+    const box = document.getElementById(transcriptBoxId);
     if (!recording) {
       recording = true;
+      baseText = box.value.trim();
       savedTranscript = '';
       sessionTranscript = '';
+      box.setAttribute('readonly', '');
       document.getElementById(micBtnId).className = 'mic-btn recording';
-      document.getElementById(statusId).textContent = 'Listening... tap to stop';
+      document.getElementById(statusId).textContent = 'Listening... tap mic to stop';
       document.getElementById(wrapId).style.display = 'block';
-      document.getElementById(transcriptBoxId).textContent = '';
+      rec = buildRec();
       try { rec.start(); } catch(e) {}
     } else {
       recording = false;
-      try { rec.stop(); } catch(e) {}
+      if (rec) { try { rec.stop(); } catch(e) {} }
+      box.removeAttribute('readonly');
       document.getElementById(micBtnId).className = 'mic-btn';
-      document.getElementById(statusId).textContent = 'Tap to speak again';
+      document.getElementById(statusId).textContent = 'Stopped. You can edit the text above, or tap mic to continue speaking.';
     }
   });
-
-  rec.onresult = (e) => {
-    let interim = '';
-    sessionTranscript = '';
-    for (let i = 0; i < e.results.length; i++) {
-      if (e.results[i].isFinal) sessionTranscript += e.results[i][0].transcript + ' ';
-      else interim += e.results[i][0].transcript;
-    }
-    updateUI(savedTranscript + sessionTranscript + interim);
-  };
-
-  rec.onend = () => {
-    // Browser stopped on its own - if user still wants to record, restart it
-    if (recording) {
-      savedTranscript += sessionTranscript;
-      sessionTranscript = '';
-      // Small delay before restart - some browsers fail without it
-      setTimeout(() => {
-        if (recording) {
-          try { rec.start(); } catch(e) {
-            // If restart fails, try once more after longer delay
-            setTimeout(() => { if (recording) { try { rec.start(); } catch(e2) {} } }, 500);
-          }
-        }
-      }, 100);
-    }
-  };
-
-  rec.onerror = (e) => {
-    // 'no-speech' error is common - just restart if still recording
-    if (e.error === 'no-speech' || e.error === 'aborted') return;
-    recording = false;
-    document.getElementById(micBtnId).className = 'mic-btn';
-    document.getElementById(statusId).textContent = 'Error (' + e.error + ') — tap to try again';
-  };
 }
 
 setupSpeech('mic-btn','audio-status','transcript-box','transcript-wrap','audio-word-meta','audio-submit-btn',false);
 setupSpeech('dump-mic-btn','dump-audio-status','dump-transcript-box','dump-transcript-wrap','dump-audio-word-meta','dump-audio-submit-btn',true);
 
 document.getElementById('audio-submit-btn').addEventListener('click', () => {
-  submitExercise(document.getElementById('transcript-box').textContent.trim());
+  submitExercise(document.getElementById('transcript-box').value.trim());
 });
 
 document.getElementById('dump-audio-submit-btn').addEventListener('click', () => {
-  submitDump(document.getElementById('dump-transcript-box').textContent.trim());
+  submitDump(document.getElementById('dump-transcript-box').value.trim());
 });
 
 // PWA install prompt
