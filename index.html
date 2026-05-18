@@ -1214,11 +1214,22 @@ function setupSpeech(micBtnId, statusId, transcriptBoxId, wrapId, wordMetaId, su
 
     r.onresult = (e) => {
       let interim = '';
-      sessionTranscript = '';
+      const finals = [];
       for (let i = 0; i < e.results.length; i++) {
-        if (e.results[i].isFinal) sessionTranscript += e.results[i][0].transcript + ' ';
+        if (e.results[i].isFinal) finals.push(e.results[i][0].transcript.trim());
         else interim += e.results[i][0].transcript;
       }
+      // Android Chrome sometimes returns progressive cumulative finals:
+      // ["I", "I feel", "I feel good"] - we only want the longest in each progression
+      const deduped = [];
+      for (const text of finals) {
+        if (deduped.length && text.startsWith(deduped[deduped.length - 1])) {
+          deduped[deduped.length - 1] = text;
+        } else {
+          deduped.push(text);
+        }
+      }
+      sessionTranscript = deduped.length ? deduped.join(' ') + ' ' : '';
       const sep = baseText && !baseText.endsWith(' ') ? ' ' : '';
       updateUI(baseText + sep + savedTranscript + sessionTranscript + interim);
     };
