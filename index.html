@@ -665,6 +665,235 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
+
+    /* ── PHASE 1 CARD ── */
+    .phase-card {
+      margin: 0 1rem 0.75rem;
+      background: linear-gradient(160deg, var(--bg2), var(--bg3));
+      border: 0.5px solid var(--border2);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+
+    .phase-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .phase-title {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .phase-skill {
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    .phase-progress-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .phase-progress-track {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .phase-progress-fill {
+      height: 100%;
+      background: var(--text);
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+    }
+
+    .phase-progress-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    /* ── REPLAY CARD (special highlight) ── */
+    .replay-card {
+      margin: 0 1rem 0.75rem;
+      background: var(--bg2);
+      border: 0.5px solid var(--border2);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-user-select: none;
+      user-select: none;
+      position: relative;
+    }
+
+    .replay-card:active { background: var(--bg3); }
+
+    .replay-card.done-today::after {
+      content: "✓";
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      color: #6ec07f;
+      font-size: 16px;
+    }
+
+    /* ── REPLAY SCREEN ── */
+    .replay-progress-bar {
+      display: flex;
+      gap: 4px;
+      padding: 0 1.25rem 0.75rem;
+    }
+
+    .replay-progress-dot {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+
+    .replay-progress-dot.active { background: var(--text); }
+    .replay-progress-dot.done { background: var(--text2); }
+
+    .replay-question {
+      font-size: 19px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .replay-hint {
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .starter-pill {
+      display: inline-block;
+      background: var(--bg3);
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      margin: 0 0 0.75rem;
+      font-family: 'Lora', Georgia, serif;
+      font-size: 13px;
+      color: var(--text2);
+      font-style: italic;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .starter-pill:active { border-color: var(--border2); }
+    .starter-pill::before { content: "↳ "; color: var(--text3); font-style: normal; }
+
+    .show-example-btn {
+      background: none;
+      border: 0.5px dashed var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text3);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    .show-example-btn:active { color: var(--text2); }
+
+    .example-box {
+      background: var(--bg3);
+      border-left: 2px solid var(--border2);
+      border-radius: 6px;
+      padding: 0.875rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.65;
+      display: none;
+    }
+
+    .example-box.visible { display: block; }
+
+    .example-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+
+    .example-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .example-tab {
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--text3);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .example-tab.active { background: var(--text2); color: var(--bg); border-color: var(--text2); }
+
+    .nav-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 0.5rem;
+    }
+
+    .nav-row .primary-btn { flex: 1; margin-top: 0; }
+    .nav-row .ghost-btn { width: auto; padding: 0.875rem 1.25rem; margin-top: 0; }
+
+    /* ── PATTERN INSIGHT ── */
+    .pattern-block {
+      margin-top: 1.5rem;
+      background: linear-gradient(160deg, var(--bg2), var(--bg3));
+      border: 0.5px solid var(--border2);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .pattern-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 0.75rem;
+    }
+
+    .pattern-text {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.65;
+    }
   </style>
 </head>
 <body>
@@ -700,6 +929,28 @@
       </div>
 
       <div class="streak-row" id="streak-row"></div>
+
+      <div class="section-label">phase 1 — the foundation</div>
+      <div class="phase-card">
+        <div class="phase-eyebrow">your current phase</div>
+        <div class="phase-title">The Foundation</div>
+        <div class="phase-skill">"Speak one clear sentence under mild pressure, without losing the thread of what you meant."</div>
+        <div class="phase-progress-row">
+          <div class="phase-progress-track"><div class="phase-progress-fill" id="phase-progress-fill" style="width:0%"></div></div>
+          <span class="phase-progress-text" id="phase-progress-text">0%</span>
+        </div>
+      </div>
+
+      <div class="section-label">today's keystone</div>
+      <div class="replay-card" id="replay-card">
+        <div class="card-eyebrow">Daily Replay</div>
+        <div class="card-title" id="replay-title">Replay a conversation from today</div>
+        <div class="card-desc">Pick one conversation. Walk through what you wanted to say vs what actually came out. This is the most important habit in Phase 1.</div>
+        <div class="card-footer">
+          <span class="xp-label" id="replay-count">0 replays logged</span>
+          <span class="diff-pill" id="replay-mode">guided</span>
+        </div>
+      </div>
 
       <div class="section-label">today's exercise</div>
       <div class="card featured" id="daily-card">
@@ -819,6 +1070,24 @@
     </div>
   </div>
 
+  <!-- DAILY REPLAY -->
+  <div class="screen" id="replay-screen">
+    <div class="ex-topbar">
+      <button class="back-btn" id="replay-back-btn" aria-label="back">&#8592;</button>
+      <span class="ex-topbar-title">Daily Replay</span>
+      <div class="mode-toggle">
+        <button class="toggle-btn active" id="replay-text-toggle">Type</button>
+        <button class="toggle-btn" id="replay-audio-toggle">Speak</button>
+      </div>
+    </div>
+
+    <div class="replay-progress-bar" id="replay-progress-bar"></div>
+
+    <div class="ex-body" id="replay-body">
+      <!-- Question content gets injected here -->
+    </div>
+  </div>
+
   <!-- COMPLETE -->
   <div class="screen" id="complete-screen">
     <div class="ex-topbar">
@@ -868,12 +1137,17 @@ const EXERCISES = [
 ];
 
 // State
-let state = { xp:0, levelIndex:0, completedToday:[], streak:0, lastDate:"", currentExercise:null, isDump:false };
+let state = { xp:0, levelIndex:0, completedToday:[], streak:0, lastDate:"", currentExercise:null, isDump:false, replays:[], replayMode:"guided", replayGuidedCount:0 };
 
 function loadState() {
   try {
     const s = localStorage.getItem("articulate_state");
     if (s) state = { ...state, ...JSON.parse(s) };
+    // Ensure replays array exists for users upgrading from old version
+    if (!Array.isArray(state.replays)) state.replays = [];
+    if (!state.replayMode) state.replayMode = "guided";
+    if (typeof state.replayGuidedCount !== "number") state.replayGuidedCount = 0;
+
     const today = new Date().toDateString();
     if (state.lastDate !== today) {
       state.completedToday = [];
@@ -891,6 +1165,25 @@ function loadState() {
 
 function saveState() {
   try { localStorage.setItem("articulate_state", JSON.stringify(state)); } catch(e) {}
+}
+
+function hasReplayedToday() {
+  const today = new Date().toDateString();
+  return state.replays.some(r => new Date(r.date).toDateString() === today);
+}
+
+function phase1Progress() {
+  // Phase 1 capability gates:
+  // - 15 daily replays
+  // - 10 tiny speaks (not yet built, so 0 for now)
+  // - 3 psychoeducation reads (not yet built)
+  // - 3 calming techniques tried (not yet built)
+  // - 15 structure practices (not yet built)
+  // - Body signal map done (not yet built)
+  // For now, just show progress on replays since that's what's built
+  const replayProgress = Math.min(15, state.replays.length) / 15;
+  // Will be: (replayProgress + tinyProgress + readsProgress + ...) / 6
+  return Math.round(replayProgress * 100 / 6); // weight as 1/6 of total
 }
 
 function dailyExerciseIndex() {
@@ -952,6 +1245,22 @@ function updateHomeUI() {
   sl.className = 'streak-label';
   sl.textContent = state.streak + ' day' + (state.streak !== 1 ? 's' : '');
   row.appendChild(sl);
+
+  // Phase 1 progress
+  const pProgress = phase1Progress();
+  document.getElementById('phase-progress-fill').style.width = pProgress + '%';
+  document.getElementById('phase-progress-text').textContent = pProgress + '%';
+
+  // Daily Replay card
+  const replayCard = document.getElementById('replay-card');
+  const replayDoneToday = hasReplayedToday();
+  replayCard.className = 'replay-card' + (replayDoneToday ? ' done-today' : '');
+  document.getElementById('replay-title').textContent = replayDoneToday
+    ? 'Replay logged today ✓'
+    : 'Replay a conversation from today';
+  const rc = state.replays.length;
+  document.getElementById('replay-count').textContent = rc + ' replay' + (rc !== 1 ? 's' : '') + ' logged';
+  document.getElementById('replay-mode').textContent = state.replayMode;
 
   const dIdx = dailyExerciseIndex();
   const daily = EXERCISES[dIdx];
@@ -1316,6 +1625,492 @@ document.getElementById('install-btn').addEventListener('click', async () => {
   const result = await deferredPrompt.userChoice;
   deferredPrompt = null;
   document.getElementById('install-banner').classList.remove('visible');
+});
+
+// ═══════════════════════════════════════════════════════════════
+// DAILY REPLAY — the keystone of Phase 1
+// ═══════════════════════════════════════════════════════════════
+
+const REPLAY_QUESTIONS = [
+  {
+    key: "context",
+    q: "Pick any conversation from your day. Doesn't matter if it went well or badly. Describe it in one sentence — who, where, what was happening.",
+    hint: "Take a moment. The first one that comes to mind is usually the right one.",
+    starters: [
+      "The conversation was with...",
+      "Earlier today I was talking to...",
+      "I had a quick chat with..."
+    ]
+  },
+  {
+    key: "wanted",
+    q: "What did you actually want to say? Not what you said. What you meant to communicate.",
+    hint: "Be honest. This is the gap between your inside voice and your outside voice.",
+    starters: [
+      "What I wanted to say was...",
+      "I really wanted them to understand that...",
+      "The point I was trying to make was..."
+    ]
+  },
+  {
+    key: "actual",
+    q: "What actually came out? Did it match what you wanted to say, or did something get lost?",
+    hint: "If they're the same, that's progress worth noting. If they're different, where did it diverge?",
+    starters: [
+      "What actually came out was...",
+      "I ended up saying...",
+      "What I said was..."
+    ]
+  },
+  {
+    key: "body",
+    q: "What did your body feel like during that moment? Tight chest, dry mouth, hot face, jaw clenched — anything you noticed.",
+    hint: "Even 'I didn't notice anything' is a useful answer. Awareness builds with practice.",
+    starters: [
+      "I noticed my...",
+      "My body felt...",
+      "Physically, I was..."
+    ]
+  },
+  {
+    key: "redo",
+    q: "If you could replay that exact moment right now, what would you say differently?",
+    hint: "No need to make it perfect. Just one small change you'd make.",
+    starters: [
+      "If I could do it again, I'd say...",
+      "Next time I'd try...",
+      "What I should have said was..."
+    ]
+  }
+];
+
+// Example replays — both ordinary and aspirational
+const REPLAY_EXAMPLES = {
+  ordinary: {
+    context: "I had a quick chat with my coworker in the kitchen about how she's been doing.",
+    wanted: "I wanted to actually engage with what she was saying about being stressed, not just give her the 'oh that sucks' brush-off.",
+    actual: "I said 'oh that sucks' and then changed the subject. Did exactly what I didn't want to do.",
+    body: "My chest got a bit tight when she mentioned therapy. I noticed I shifted away physically too.",
+    redo: "I'd ask one follow-up question. 'What's been making it hardest?' Even that would have been more honest than what I did."
+  },
+  aspirational: {
+    context: "I had a difficult conversation with my brother about money he owes me. We were at a restaurant.",
+    wanted: "I wanted to be clear that this matters to me, without making him feel attacked. I wanted him to see I'm not angry, I'm just tired of letting it slide because we're family.",
+    actual: "I started okay — I said 'I want to talk about the money thing.' But when he got defensive, I softened and said 'it's fine, we can sort it out later.' I retreated. I always retreat.",
+    body: "My throat tightened the moment I brought it up. I noticed I started talking faster, which is my tell. By the time I said 'it's fine,' my shoulders were almost up to my ears.",
+    redo: "I'd hold my ground when he got defensive. I'd say something like 'I hear you, and I'm not trying to fight — but I can't keep saying it's fine when it's not.' Stay calm, don't retreat."
+  }
+};
+
+let replayState = { step: 0, answers: {}, mode: 'text', currentExample: 'ordinary' };
+
+function startReplay() {
+  replayState = { step: 0, answers: {}, mode: 'text', currentExample: 'ordinary' };
+  setReplayMode('text');
+  renderReplayStep();
+  showScreen('replay-screen');
+}
+
+function setReplayMode(m) {
+  replayState.mode = m;
+  document.getElementById('replay-text-toggle').className = 'toggle-btn' + (m === 'text' ? ' active' : '');
+  document.getElementById('replay-audio-toggle').className = 'toggle-btn' + (m === 'audio' ? ' active' : '');
+}
+
+function renderReplayProgressBar() {
+  const bar = document.getElementById('replay-progress-bar');
+  bar.innerHTML = '';
+  for (let i = 0; i < REPLAY_QUESTIONS.length; i++) {
+    const dot = document.createElement('div');
+    let cls = 'replay-progress-dot';
+    if (i < replayState.step) cls += ' done';
+    else if (i === replayState.step) cls += ' active';
+    dot.className = cls;
+    bar.appendChild(dot);
+  }
+}
+
+function renderReplayStep() {
+  renderReplayProgressBar();
+  const body = document.getElementById('replay-body');
+  const showGuided = state.replayMode === 'guided';
+
+  if (replayState.step >= REPLAY_QUESTIONS.length) {
+    renderReplayComplete();
+    return;
+  }
+
+  const q = REPLAY_QUESTIONS[replayState.step];
+  const isLast = replayState.step === REPLAY_QUESTIONS.length - 1;
+  const startersHtml = showGuided ? q.starters.map(s =>
+    `<span class="starter-pill" data-starter="${s.replace(/"/g, '&quot;')}">${s}</span>`
+  ).join(' ') : '';
+
+  const exampleBtn = showGuided
+    ? `<button class="show-example-btn" id="show-example-btn">Show me an example</button>`
+    : '';
+
+  body.innerHTML = `
+    <div class="ex-eyebrow">Step ${replayState.step + 1} of ${REPLAY_QUESTIONS.length}</div>
+    <div class="replay-question">${q.q}</div>
+    <div class="replay-hint">${q.hint}</div>
+
+    ${startersHtml ? `<div style="margin-bottom: 0.5rem;">${startersHtml}</div>` : ''}
+    ${exampleBtn}
+
+    <div class="example-box" id="example-box">
+      <div class="example-tabs">
+        <button class="example-tab active" data-tab="ordinary">Ordinary</button>
+        <button class="example-tab" data-tab="aspirational">Aspirational</button>
+      </div>
+      <div class="example-label">Example answer</div>
+      <div id="example-text">${REPLAY_EXAMPLES.ordinary[q.key]}</div>
+    </div>
+
+    <textarea id="replay-input" placeholder="${showGuided ? 'Type your answer, or tap a starter above to begin.' : 'Your answer...'}" rows="5" style="display:${replayState.mode === 'text' ? 'block' : 'none'};"></textarea>
+
+    <div id="replay-audio-mode" style="display:${replayState.mode === 'audio' ? 'block' : 'none'};">
+      <div class="audio-area visible" style="padding-top: 0.5rem;">
+        <button class="mic-btn" id="replay-mic-btn" aria-label="Start recording">🎙</button>
+        <div class="audio-status" id="replay-audio-status">Tap to speak</div>
+        <div id="replay-transcript-wrap" style="width:100%;margin-top:1rem;display:none;">
+          <textarea class="transcript-box" id="replay-transcript-box" placeholder="Your spoken words will appear here. Stop recording to edit." readonly></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="word-meta" id="replay-word-meta">0 words</div>
+
+    <div class="nav-row">
+      ${replayState.step > 0 ? '<button class="ghost-btn" id="replay-back-step-btn">Back</button>' : ''}
+      <button class="primary-btn" id="replay-next-btn" disabled>${isLast ? 'Finish replay' : 'Next →'}</button>
+    </div>
+  `;
+
+  // Pre-fill if user has already answered this step (e.g., came back via Back button)
+  const existing = replayState.answers[q.key];
+  if (existing) {
+    document.getElementById('replay-input').value = existing;
+    updateReplayWordCount(existing);
+  }
+
+  setupReplayStepHandlers();
+}
+
+function updateReplayWordCount(text) {
+  const w = countWords(text);
+  document.getElementById('replay-word-meta').textContent = w + ' word' + (w !== 1 ? 's' : '');
+  document.getElementById('replay-next-btn').disabled = w < 3;
+}
+
+function setupReplayStepHandlers() {
+  // Starter pills (insert text into the input)
+  document.querySelectorAll('.starter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const starter = pill.getAttribute('data-starter');
+      const input = document.getElementById('replay-input');
+      if (replayState.mode === 'text') {
+        input.value = starter + ' ';
+        input.focus();
+        updateReplayWordCount(input.value);
+      }
+    });
+  });
+
+  // Show/hide example
+  const exBtn = document.getElementById('show-example-btn');
+  const exBox = document.getElementById('example-box');
+  if (exBtn) {
+    exBtn.addEventListener('click', () => {
+      const isVisible = exBox.classList.contains('visible');
+      if (isVisible) {
+        exBox.classList.remove('visible');
+        exBtn.textContent = 'Show me an example';
+      } else {
+        exBox.classList.add('visible');
+        exBtn.textContent = 'Hide example';
+      }
+    });
+  }
+
+  // Example tabs (ordinary vs aspirational)
+  document.querySelectorAll('.example-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const which = tab.getAttribute('data-tab');
+      document.querySelectorAll('.example-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const q = REPLAY_QUESTIONS[replayState.step];
+      document.getElementById('example-text').textContent = REPLAY_EXAMPLES[which][q.key];
+    });
+  });
+
+  // Input listener
+  const input = document.getElementById('replay-input');
+  if (input) {
+    input.addEventListener('input', function() {
+      updateReplayWordCount(this.value);
+    });
+  }
+
+  // Audio mode setup
+  if (replayState.mode === 'audio') {
+    setupReplaySpeech();
+  }
+
+  // Mode toggle buttons
+  const textToggle = document.getElementById('replay-text-toggle');
+  const audioToggle = document.getElementById('replay-audio-toggle');
+  if (textToggle) textToggle.onclick = () => { setReplayMode('text'); renderReplayStep(); };
+  if (audioToggle) audioToggle.onclick = () => { setReplayMode('audio'); renderReplayStep(); };
+
+  // Back button
+  const backBtn = document.getElementById('replay-back-step-btn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      saveCurrentReplayAnswer();
+      replayState.step--;
+      renderReplayStep();
+    });
+  }
+
+  // Next button
+  document.getElementById('replay-next-btn').addEventListener('click', () => {
+    saveCurrentReplayAnswer();
+    replayState.step++;
+    renderReplayStep();
+  });
+}
+
+function saveCurrentReplayAnswer() {
+  const q = REPLAY_QUESTIONS[replayState.step];
+  if (!q) return;
+  let answer = '';
+  if (replayState.mode === 'audio') {
+    const box = document.getElementById('replay-transcript-box');
+    answer = box ? box.value.trim() : '';
+  } else {
+    const input = document.getElementById('replay-input');
+    answer = input ? input.value.trim() : '';
+  }
+  if (answer) replayState.answers[q.key] = answer;
+}
+
+// Replay-specific speech recognition
+let replayRec = null;
+let replayRecording = false;
+let replayBaseText = '';
+let replaySavedTranscript = '';
+let replaySessionTranscript = '';
+
+function setupReplaySpeech() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('replay-mic-btn');
+  if (!micBtn) return;
+  if (!SpeechRecognition) {
+    document.getElementById('replay-audio-status').textContent = 'Speech not supported on this browser';
+    return;
+  }
+
+  const transcriptBox = document.getElementById('replay-transcript-box');
+  if (transcriptBox) {
+    transcriptBox.addEventListener('input', function() {
+      if (replayRecording) return;
+      updateReplayWordCount(this.value);
+    });
+  }
+
+  function buildRec() {
+    const r = new SpeechRecognition();
+    r.continuous = true;
+    r.interimResults = true;
+    r.lang = 'en-ZA';
+
+    r.onresult = (e) => {
+      let interim = '';
+      const finals = [];
+      for (let i = 0; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finals.push(e.results[i][0].transcript.trim());
+        else interim += e.results[i][0].transcript;
+      }
+      const deduped = [];
+      for (const text of finals) {
+        if (deduped.length && text.startsWith(deduped[deduped.length - 1])) {
+          deduped[deduped.length - 1] = text;
+        } else {
+          deduped.push(text);
+        }
+      }
+      replaySessionTranscript = deduped.length ? deduped.join(' ') + ' ' : '';
+      const sep = replayBaseText && !replayBaseText.endsWith(' ') ? ' ' : '';
+      const full = replayBaseText + sep + replaySavedTranscript + replaySessionTranscript + interim;
+      const box = document.getElementById('replay-transcript-box');
+      if (box) {
+        box.value = full;
+        updateReplayWordCount(full);
+      }
+    };
+
+    r.onend = () => {
+      if (replayRecording) {
+        replaySavedTranscript += replaySessionTranscript;
+        replaySessionTranscript = '';
+        setTimeout(() => {
+          if (replayRecording) {
+            replayRec = buildRec();
+            try { replayRec.start(); } catch(e) {}
+          }
+        }, 100);
+      }
+    };
+
+    r.onerror = (e) => {
+      if (e.error === 'no-speech' || e.error === 'aborted') return;
+      replayRecording = false;
+      const mic = document.getElementById('replay-mic-btn');
+      const status = document.getElementById('replay-audio-status');
+      if (mic) mic.className = 'mic-btn';
+      const box = document.getElementById('replay-transcript-box');
+      if (box) box.removeAttribute('readonly');
+      if (status) status.textContent = 'Error (' + e.error + ') — tap to try again';
+    };
+
+    return r;
+  }
+
+  micBtn.onclick = () => {
+    const box = document.getElementById('replay-transcript-box');
+    const status = document.getElementById('replay-audio-status');
+    const wrap = document.getElementById('replay-transcript-wrap');
+    if (!replayRecording) {
+      replayRecording = true;
+      replayBaseText = box.value.trim();
+      replaySavedTranscript = '';
+      replaySessionTranscript = '';
+      box.setAttribute('readonly', '');
+      micBtn.className = 'mic-btn recording';
+      status.textContent = 'Listening... tap mic to stop';
+      wrap.style.display = 'block';
+      replayRec = buildRec();
+      try { replayRec.start(); } catch(e) {}
+    } else {
+      replayRecording = false;
+      if (replayRec) { try { replayRec.stop(); } catch(e) {} }
+      box.removeAttribute('readonly');
+      micBtn.className = 'mic-btn';
+      status.textContent = 'Stopped. You can edit the text above, or tap mic to continue.';
+    }
+  };
+}
+
+async function renderReplayComplete() {
+  // Save the replay
+  const newReplay = {
+    date: new Date().toISOString(),
+    answers: { ...replayState.answers }
+  };
+  state.replays.push(newReplay);
+  if (state.replayMode === 'guided') {
+    state.replayGuidedCount++;
+    // After 5 guided sessions, suggest moving to light mode
+    if (state.replayGuidedCount === 5) {
+      // We'll surface this suggestion below, but auto-progression to 'light' happens at 8
+    }
+    if (state.replayGuidedCount >= 8) {
+      state.replayMode = 'light';
+    }
+  }
+  saveState();
+
+  const body = document.getElementById('replay-body');
+  body.innerHTML = `
+    <div class="ex-eyebrow">Replay complete</div>
+    <div class="replay-question">Good work. That's logged.</div>
+    <div class="replay-hint">Each replay you do trains your awareness. Over time, patterns will emerge that no single conversation could show you.</div>
+
+    <div class="pattern-block">
+      <div class="pattern-label">Reading your replay...</div>
+      <div class="pattern-text" id="pattern-text"><div class="dots"><span></span><span></span><span></span></div></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="primary-btn" id="replay-done-btn">Back to home</button>
+    </div>
+  `;
+
+  document.getElementById('replay-done-btn').addEventListener('click', () => {
+    showScreen('home-screen');
+    updateHomeUI();
+  });
+
+  // Generate AI insight
+  await generateReplayInsight();
+}
+
+async function generateReplayInsight() {
+  const recent = state.replays.slice(-5); // last 5 for pattern detection
+  const replayCount = state.replays.length;
+
+  let systemPrompt, userContent;
+
+  if (replayCount >= 5) {
+    // Pattern recognition mode
+    systemPrompt = `You are a calm, observant communication coach. The person has logged ${replayCount} Daily Replays — short reflections on conversations they had each day. Look across their last 5 entries and identify ONE genuine pattern. Could be: a recurring body signal, a repeated pattern of what they wanted vs what they said, a theme in the conversations they replay, or something they're consistently noticing. Be specific — quote back what they said. Don't make up patterns that aren't there. If you don't see a clear pattern, say so honestly and reflect on the most recent entry instead.
+
+Tone: warm, direct, observant. Like a good friend who actually pays attention.
+Keep response to 2-3 short sentences. No bullet points. No headers.
+Respond in plain text only. No JSON, no markdown.`;
+
+    userContent = `Their last ${recent.length} Daily Replays:\n\n` + recent.map((r, i) => {
+      return `--- Replay ${i + 1} (${new Date(r.date).toLocaleDateString()}) ---\n` +
+        `Context: ${r.answers.context || '(skipped)'}\n` +
+        `Wanted to say: ${r.answers.wanted || '(skipped)'}\n` +
+        `Actually said: ${r.answers.actual || '(skipped)'}\n` +
+        `Body: ${r.answers.body || '(skipped)'}\n` +
+        `Would redo: ${r.answers.redo || '(skipped)'}`;
+    }).join('\n\n');
+  } else {
+    // Single-replay reflection mode
+    systemPrompt = `You are a calm, observant communication coach. The person just completed their Daily Replay — a reflection on one conversation from their day. Read their answers carefully and give them ONE honest, specific observation about what they wrote. Not a compliment. Not generic advice. A real reflection that shows you actually read what they said.
+
+Tone: warm, direct, observant. Like a good friend who actually pays attention.
+Keep response to 2-3 short sentences. No bullet points. No headers.
+Respond in plain text only. No JSON, no markdown.
+
+The person has logged ${replayCount} replay${replayCount === 1 ? '' : 's'} so far. Pattern recognition kicks in at 5+ replays. For now, focus on this single entry.`;
+
+    const r = recent[recent.length - 1];
+    userContent = `Their Daily Replay:\n\n` +
+      `Context: ${r.answers.context || '(skipped)'}\n` +
+      `Wanted to say: ${r.answers.wanted || '(skipped)'}\n` +
+      `Actually said: ${r.answers.actual || '(skipped)'}\n` +
+      `Body: ${r.answers.body || '(skipped)'}\n` +
+      `Would redo: ${r.answers.redo || '(skipped)'}`;
+  }
+
+  const patternEl = document.getElementById('pattern-text');
+  const labelEl = document.querySelector('.pattern-label');
+
+  try {
+    const raw = await callClaude(systemPrompt, userContent);
+    const cleaned = raw.trim();
+    if (patternEl) patternEl.textContent = cleaned;
+    if (labelEl) labelEl.textContent = replayCount >= 5 ? 'Pattern across your recent replays' : 'A reflection on your replay';
+  } catch(e) {
+    if (patternEl) patternEl.textContent = 'Could not generate a reflection right now. Your replay is still saved — it counts.';
+    if (labelEl) labelEl.textContent = 'Couldn\'t reach the AI';
+  }
+}
+
+// Hook up the home screen replay card
+document.getElementById('replay-card').addEventListener('click', startReplay);
+document.getElementById('replay-back-btn').addEventListener('click', () => {
+  // Stop any active recording
+  if (replayRecording && replayRec) {
+    replayRecording = false;
+    try { replayRec.stop(); } catch(e) {}
+  }
+  showScreen('home-screen');
+  updateHomeUI();
 });
 
 // Boot
